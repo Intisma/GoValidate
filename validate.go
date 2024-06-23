@@ -7,31 +7,31 @@ import "fmt"
 // Struct holding a generic value, a set of conditions and a boolean
 // indicating if all validations must be performed (true) or only until
 // one of them fails (false)
-type Validations[T any] struct {
-	Value          T
-	Conditions     []func(T) error
+type Validations struct {
+	Value          interface{}
+	Conditions     []func(interface{}) error
 	ValidateMethod bool
 }
 
 // Function to create an empty Validations variable
-func CreateValidations[T any]() Validations[T] {
-	return Validations[T]{
-		Value:          *new(T), // Initialize with the zero value of T
-		Conditions:     []func(T) error{},
+func CreateValidations[T any]() Validations {
+	return Validations{
+		Value:          *new(interface{}), // Initialize with the zero value of T
+		Conditions:     []func(interface{}) error{},
 		ValidateMethod: false, // Default to validating until a condition fails
 	}
 }
 
 // Function to add another condition to be validated to an existing Validations
 // variable
-func AddCondition[T any](v *Validations[T], condition func(T) error) {
+func AddCondition(v *Validations, condition func(interface{}) error) {
 	v.Conditions = append(v.Conditions, condition)
 }
 
 // Function to copy a Validations variable
-func CopyValidations[T any](v Validations[T]) Validations[T] {
-	copyConditions := append([]func(T) error(nil), v.Conditions...)
-	copy := Validations[T]{
+func CopyValidations(v Validations) Validations {
+	copyConditions := append([]func(interface{}) error(nil), v.Conditions...)
+	copy := Validations{
 		Value:          v.Value,
 		Conditions:     copyConditions,
 		ValidateMethod: v.ValidateMethod,
@@ -40,20 +40,20 @@ func CopyValidations[T any](v Validations[T]) Validations[T] {
 }
 
 // Function to set the value of a Validations variable
-func SetValueValidations[T any](v *Validations[T], value T) {
+func SetValueValidations(v *Validations, value interface{}) {
 	v.Value = value
 }
 
 // Function to set the method of validation to a Validations variable
 // where true means validating all conditions and false validation until one
 // of the condition fails
-func SetMethodValidations[T any](v *Validations[T], validateMethod bool) {
+func SetMethodValidations(v *Validations, validateMethod bool) {
 	v.ValidateMethod = validateMethod
 }
 
 // Function to check all the conditions to the value of a Validations variable
 // and returning the error (if any)
-func Validate[T any](v Validations[T]) error {
+func Validate(v Validations) error {
 	if v.ValidateMethod {
 		return validate(v.Value, v.Conditions)
 	} else {
@@ -62,7 +62,7 @@ func Validate[T any](v Validations[T]) error {
 }
 
 // Function to validate all conditions, combining all the errors encountered.
-func validate[T any](value T, funcs []func(T) error) error {
+func validate(value interface{}, funcs []func(interface{}) error) error {
 	var combinedErr error
 	for _, f := range funcs {
 		err := f(value)
@@ -79,7 +79,7 @@ func validate[T any](value T, funcs []func(T) error) error {
 
 // Function to validate until a condition fails, returning the error of that
 // condition
-func validateUntilFailure[T any](value T, funcs []func(T) error) error {
+func validateUntilFailure(value interface{}, funcs []func(interface{}) error) error {
 	for _, f := range funcs {
 		err := f(value)
 		if err != nil {

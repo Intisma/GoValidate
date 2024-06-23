@@ -56,7 +56,7 @@ func isMoney(v interface{}) error {
 }
 
 // Validations to check if a value is a Money type
-var MoneyValidation = govalidate.Validations[interface{}]{
+var MoneyValidation = govalidate.Validations{
 	Conditions: []func(interface{}) error{
 		func(v interface{}) error { return isMoney(v) },
 	}, ValidateMethod: false,
