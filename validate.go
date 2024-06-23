@@ -30,12 +30,12 @@ func AddCondition[T any](v *Validations[T], condition func(T) error) {
 
 // Function to copy a Validations variable
 func CopyValidations[T any](v Validations[T]) Validations[T] {
+	copyConditions := append([]func(T) error(nil), v.Conditions...)
 	copy := Validations[T]{
 		Value:          v.Value,
-		Conditions:     make([]func(T) error, len(v.Conditions)),
+		Conditions:     copyConditions,
 		ValidateMethod: v.ValidateMethod,
 	}
-	copy.Conditions = append(copy.Conditions, v.Conditions...)
 	return copy
 }
 
